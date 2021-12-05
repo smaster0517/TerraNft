@@ -1,0 +1,38 @@
+[package]
+name = "terra-nft-stub"
+version = "0.0.1"
+authors = ["rustroid", "rusty-fork"]
+edition = "2018"
+description = "A C@721 contract that allows easy stub tokens to be created and used in local test environments"
+license = "Apache-2.0"
+repository = "https://github.com/vecterra/terra-nft-stub"
+homepage = ""
+documentation = ""
+
+exclude = [
+  # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
+  "artifacts/*",
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for more explicit tests, cargo test --features=backtraces
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cw721 = "0.10.0"
+cw721-base = "0.10.0"
+cw721-metadata-template = { path = "../cw721-metadata-template" }
+cosmwasm-std = { version = "1.0.0-beta2" }
+schemars = "0.8.6"
+serde = { version = "1.0.130", default-features = false, features = ["derive"] }
+thiserror = { version = "1.0.30" }
+serde-json-wasm="0.3.1"
+
+[dev-dependencies]
+cosmwasm-schema = { version = "1.0.0-beta2" }

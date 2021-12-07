@@ -1,12 +1,12 @@
 pub mod msg;
 
-use cw721_metadata_template::{Cw721MetadataContract, Metadata};
+use cw721_metadata_onchain::Cw721MetadataContract;
 
 pub use cw721_base::{ContractError, InstantiateMsg, MintMsg, MinterResponse, QueryMsg};
 
 use crate::msg::ExecuteMsg;
 
-type Cw721ExecuteMsg = cw721_metadata_template::ExecuteMsg;
+type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
 
 #[cfg(not(feature = "library"))]
 pub mod entry {
@@ -37,11 +37,21 @@ pub mod entry {
         msg: ExecuteMsg,
     ) -> Result<Response, ContractError> {
         match msg {
-            ExecuteMsg::StubMsg{token_id, token_uri, owner_id, attributes} => {
-								// do some custom handling....
-						  	Ok(Response::default());
-				  	},
-            _ => Cw721MetadataContract::default().execute(deps, env, info, Cw721ExecuteMsg::from(msg)),
+            ExecuteMsg::StubMsg {
+                token_id: _,
+                token_uri: _,
+                owner_id: _,
+                attributes: _,
+            } => {
+                // do some custom handling....
+                Ok(Response::default())
+            }
+            _ => Cw721MetadataContract::default().execute(
+                deps,
+                env,
+                info,
+                Cw721ExecuteMsg::from(msg),
+            ),
         }
     }
 
@@ -87,7 +97,7 @@ mod tests {
                 ..Metadata::default()
             }),
         };
-        let exec_msg = cw721_metadata_template::ExecuteMsg::Mint(mint_msg.clone());
+        let exec_msg = cw721_metadata_onchain::ExecuteMsg::Mint(mint_msg.clone());
         contract
             .execute(deps.as_mut(), mock_env(), info, exec_msg)
             .unwrap();

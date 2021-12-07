@@ -197,8 +197,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "cw721-metadata-template"
-version = "0.0.1"
+name = "cw721-metadata-onchain"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92b2d02a8b26d400328e080ef61d168bf48c4904d172f0af7415d68e06f0adc1"
 dependencies = [
  "cosmwasm-std",
  "cw721",
@@ -563,7 +565,7 @@ dependencies = [
  "cosmwasm-std",
  "cw721",
  "cw721-base",
- "cw721-metadata-template",
+ "cw721-metadata-onchain",
  "schemars",
  "serde",
  "serde-json-wasm",

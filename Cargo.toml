@@ -1,9 +1,9 @@
 [package]
-name = "terra-nft-stub"
+name = "terra_nft_stub"
 version = "0.0.1"
-authors = ["rustroid", "rusty-fork"]
+authors = ["rustroid"]
 edition = "2018"
-description = "A C@721 contract that allows easy stub tokens to be created and used in local test environments"
+description = "A CW721 contract that allows easy stub tokens to be created and used in local test environments"
 license = "Apache-2.0"
 repository = "https://github.com/vecterra/terra-nft-stub"
 homepage = ""
@@ -18,6 +18,17 @@ exclude = [
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
+overflow-checks = true
+
 [features]
 # for more explicit tests, cargo test --features=backtraces
 backtraces = ["cosmwasm-std/backtraces"]
@@ -25,15 +36,25 @@ backtraces = ["cosmwasm-std/backtraces"]
 library = []
 
 [dependencies]
-cw721 = "0.10.0"
-cw721-base = "0.10.0"
-cw721-metadata-onchain = { version = "0.10.0", features = ["library"] }
-cosmwasm-std = { version = "1.0.0-beta2" }
-cw-storage-plus = { version = "0.10.2" }
+cw721 = "0.9.2"
+cw721-base = "0.9.1"
+cw721-metadata-onchain = { version = "^0.9", features = ["library"] }
+cosmwasm-std = { version = "0.16.0" }
+cw-storage-plus = "0.9.1"
 schemars = "0.8.6"
 serde = { version = "1.0.130", default-features = false, features = ["derive"] }
 thiserror = { version = "1.0.30" }
 serde-json-wasm="0.3.1"
 
 [dev-dependencies]
-cosmwasm-schema = { version = "1.0.0-beta2" }
+cosmwasm-schema = "0.16.0"
+
+[package.metadata.scripts]
+optimize = """docker run --rm -v "$(pwd)":/code \
+          --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+            --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+              cosmwasm/rust-optimizer:0.12.3"""
+optimize-w32 = """docker run --rm -v <a windows mount path>/code  \
+            --mount type=volume,source=terra-nft-stub_cache,target=/code/target \
+            --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+            cosmwasm/rust-optimizer:0.12.3"""

@@ -1,22 +1,20 @@
 pub mod msg;
 mod state;
 
-use cw721_metadata_onchain::Cw721MetadataContract;
-
-pub use cw721_base::{ContractError, MintMsg, MinterResponse, QueryMsg};
-
-use crate::msg::{ExecuteMsg, InstantiateMsg, MsgMap};
-use crate::state::Configuration;
-
-type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
-type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
-
 #[cfg(not(feature = "library"))]
 pub mod entry {
-    use super::*;
-
     use cosmwasm_std::{entry_point, to_binary};
     use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+
+    use cw721_metadata_onchain::Cw721MetadataContract;
+
+    pub use cw721_base::{ContractError, MintMsg, MinterResponse, QueryMsg};
+
+    pub use crate::msg::{ExecuteMsg, InstantiateMsg, MsgMap};
+    use crate::state::Configuration;
+
+    type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
+    type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
 
     /// This impl should probably go somewhere else but I don't fully understand managing scope for
     /// trait implementations.

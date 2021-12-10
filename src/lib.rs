@@ -1,11 +1,14 @@
 pub mod msg;
+mod state;
 
 use cw721_metadata_onchain::Cw721MetadataContract;
 
-pub use cw721_base::{ContractError, InstantiateMsg, MintMsg, MinterResponse, QueryMsg};
+pub use cw721_base::{ContractError, MintMsg, MinterResponse, QueryMsg};
 
-use crate::msg::ExecuteMsg;
+use crate::msg::{ExecuteMsg, InstantiateMsg, MsgMap};
+use crate::state::Configuration;
 
+type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
 type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
 
 #[cfg(not(feature = "library"))]
@@ -15,7 +18,17 @@ pub mod entry {
     use cosmwasm_std::entry_point;
     use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 
-    // This is a simple type to let us handle empty extensions
+    /// This impl should probably go somewhere else but I don't fully understand managing scope for
+    /// trait implementations.
+    impl MsgMap for Cw721InstantiateMsg {
+        fn from_wrapper(msg: InstantiateMsg) -> Cw721InstantiateMsg {
+            Cw721InstantiateMsg {
+                name: msg.name,
+                symbol: msg.symbol,
+                minter: msg.minter,
+            }
+        }
+    }
 
     // This makes a conscious choice on the various generics used by the contract
     #[entry_point]
@@ -25,8 +38,12 @@ pub mod entry {
         info: MessageInfo,
         msg: InstantiateMsg,
     ) -> StdResult<Response> {
-        // this is custom, taking our custom instantiate message.
-        Cw721MetadataContract::default().instantiate(deps, env, info, msg)
+        let cfg = Configuration::from_msg(&msg);
+
+        cfg.store(deps.api, deps.storage)?;
+
+        let core_msg = Cw721InstantiateMsg::from_wrapper(msg);
+        Cw721MetadataContract::default().instantiate(deps, env, info, core_msg)
     }
 
     #[entry_point]
@@ -42,10 +59,7 @@ pub mod entry {
                 token_uri: _,
                 owner_id: _,
                 attributes: _,
-            } => {
-                // do some custom handling....
-                Ok(Response::default())
-            }
+            } => Ok(Response::default()),
             _ => Cw721MetadataContract::default().execute(
                 deps,
                 env,
@@ -59,51 +73,5 @@ pub mod entry {
     pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
         // This needs to handle static stub on NftInfo and AllNftInfo
         Cw721MetadataContract::default().query(deps, env, msg)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cw721::Cw721Query;
-
-    const CREATOR: &str = "creator";
-
-    #[test]
-    fn use_metadata_extension() {
-        let mut deps = mock_dependencies();
-        let contract = Cw721MetadataContract::default();
-
-        let info = mock_info(CREATOR, &[]);
-        let init_msg = InstantiateMsg {
-            name: "SpaceShips".to_string(),
-            symbol: "SPACE".to_string(),
-            minter: CREATOR.to_string(),
-        };
-        contract
-            .instantiate(deps.as_mut(), mock_env(), info.clone(), init_msg)
-            .unwrap();
-
-        let token_id = "Enterprise";
-        let mint_msg = MintMsg {
-            token_id: token_id.to_string(),
-            owner: "john".to_string(),
-            token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
-            extension: Some(Metadata {
-                description: Some("Spaceship with Warp Drive".into()),
-                name: Some("Starship USS Enterprise".to_string()),
-                ..Metadata::default()
-            }),
-        };
-        let exec_msg = cw721_metadata_onchain::ExecuteMsg::Mint(mint_msg.clone());
-        contract
-            .execute(deps.as_mut(), mock_env(), info, exec_msg)
-            .unwrap();
-
-        let res = contract.nft_info(deps.as_ref(), token_id.into()).unwrap();
-        assert_eq!(res.token_uri, mint_msg.token_uri);
-        assert_eq!(res.extension, mint_msg.extension);
     }
 }

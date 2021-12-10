@@ -15,7 +15,7 @@ type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
 pub mod entry {
     use super::*;
 
-    use cosmwasm_std::entry_point;
+    use cosmwasm_std::{entry_point, to_binary};
     use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 
     /// This impl should probably go somewhere else but I don't fully understand managing scope for
@@ -72,6 +72,9 @@ pub mod entry {
     #[entry_point]
     pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
         // This needs to handle static stub on NftInfo and AllNftInfo
-        Cw721MetadataContract::default().query(deps, env, msg)
+        match msg {
+            QueryMsg::NftInfo { token_id } if token_id == "stub" => to_binary(&Configuration::get_static_token(deps.storage)?),
+            _ => Cw721MetadataContract::default().query(deps, env, msg),
+        }
     }
 }

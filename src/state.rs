@@ -1,4 +1,5 @@
 use cosmwasm_std::{Addr, Api, Response, StdError, StdResult, Storage};
+use cw721::NftInfoResponse;
 use cw721_metadata_onchain::Metadata;
 use cw_storage_plus::Item;
 
@@ -9,7 +10,7 @@ pub struct Configuration {
     pub static_token: Option<String>,
 }
 
-impl Configuration {
+impl<'a> Configuration {
     pub fn from_msg(msg: &InstantiateMsg) -> Configuration {
         Configuration {
             always_owner: msg.always_owner.clone(),
@@ -45,6 +46,19 @@ impl Configuration {
         }
 
         Ok(Response::default())
+    }
+
+    pub fn get_static_token(store: &dyn Storage) -> StdResult<NftInfoResponse<Metadata>> {
+        if let Ok(stub_str) = Item::<'a, String>::new("static_token").load(store) {
+            let result = serde_json_wasm::from_str(&stub_str);
+
+            if let Ok(extension) = result {
+                return Ok(NftInfoResponse {
+                            token_uri: None,
+                            extension });
+            }
+        }
+        Err(StdError::SerializeErr{ source_type: "Metadata".to_string(), msg: "Could not deserialize stored stub token".to_string()})
     }
 }
 

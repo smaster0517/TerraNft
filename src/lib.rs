@@ -71,7 +71,9 @@ pub mod entry {
     pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
         // This needs to handle static stub on NftInfo and AllNftInfo
         match msg {
-            QueryMsg::NftInfo { token_id } if token_id == "stub" => to_binary(&Configuration::get_static_token(deps.storage)?),
+            QueryMsg::NftInfo { token_id } if token_id == "stub" => {
+                to_binary(&Configuration::get_static_token(deps.storage)?)
+            }
             _ => Cw721MetadataContract::default().query(deps, env, msg),
         }
     }

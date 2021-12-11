@@ -26,9 +26,13 @@ impl<'a> Configuration {
         }
 
         if let Some(st) = &self.static_token {
-            // validate it is a Metadata?
+            if serde_json_wasm::from_str::<Metadata>(st).is_err() {
+                return Err(StdError::SerializeErr {
+                    source_type: "Metadata".to_string(),
+                    msg: "Could not deserialize input string".to_string(),
+                });
+            }
 
-            // store it
             let storage = Item::new("static_token");
             storage.save(store, st)?;
         } else {
@@ -54,11 +58,15 @@ impl<'a> Configuration {
 
             if let Ok(extension) = result {
                 return Ok(NftInfoResponse {
-                            token_uri: None,
-                            extension });
+                    token_uri: None,
+                    extension,
+                });
             }
         }
-        Err(StdError::SerializeErr{ source_type: "Metadata".to_string(), msg: "Could not deserialize stored stub token".to_string()})
+        Err(StdError::SerializeErr {
+            source_type: "Metadata".to_string(),
+            msg: "Could not deserialize stored stub token".to_string(),
+        })
     }
 }
 

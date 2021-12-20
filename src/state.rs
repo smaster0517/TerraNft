@@ -1,21 +1,79 @@
+use serde::de::DeserializeOwned;
+use serde::Serialize;
+
 use cosmwasm_std::{Addr, Api, Response, StdError, StdResult, Storage};
 use cw721::NftInfoResponse;
+use cw721_base::ContractError;
 use cw721_metadata_onchain::Metadata;
-use cw_storage_plus::Item;
+use cw_storage_plus::{Index, IndexList, IndexedMap, Item, MultiIndex};
 
 use crate::msg::InstantiateMsg;
+
+/// Lifted from TerraPeeps as an indexed data type witihin Terra (CW) storage.
+pub struct TokenIndexString<'a> {
+    // pk goes to second tuple element
+    pub owner: MultiIndex<'a, (String, Vec<u8>), String>,
+}
+
+impl<'a> IndexList<String> for TokenIndexString<'a> {
+    fn get_indexes(&'_ self) -> Box<dyn Iterator<Item = &'_ dyn Index<String>> + '_> {
+        let v: Vec<&dyn Index<String>> = vec![&self.owner];
+        Box::new(v.into_iter())
+    }
+}
 
 pub struct Configuration {
     pub always_owner: Option<String>,
     pub static_token: Option<String>,
 }
 
-impl<'a> Configuration {
-    pub fn from_msg(msg: &InstantiateMsg) -> Configuration {
+#[allow(clippy::ptr_arg)]
+pub fn token_owner_idx_string(d: &String, k: Vec<u8>) -> (String, Vec<u8>) {
+    (d.clone(), k)
+}
+
+impl Configuration {
+    pub fn from_msg<T>(msg: &InstantiateMsg) -> Configuration
+    where
+        T: Serialize + DeserializeOwned + Clone,
+    {
         Configuration {
             always_owner: msg.always_owner.clone(),
             static_token: msg.static_token.clone(),
         }
+    }
+
+    fn indexed_token_uris<'a>() -> IndexedMap<'a, &'a str, String, TokenIndexString<'a>> {
+        let uri_indexes = TokenIndexString {
+            owner: MultiIndex::new(token_owner_idx_string, "tokens_uri", "tokens_uri__owner"),
+        };
+
+        IndexedMap::new("tokens_uri", uri_indexes)
+    }
+
+    pub fn claimed<'a>(
+        store: &mut dyn Storage,
+        token_uri: &'a str,
+    ) -> Result<&'a str, ContractError> {
+        let tokens_store = Configuration::indexed_token_uris();
+
+        if let Ok(_x) = tokens_store.load(store, token_uri) {
+            return Err(ContractError::Claimed {});
+        }
+
+        Ok(token_uri)
+    }
+
+    pub fn store_token_by_uri<'a, T>(
+        store: &mut dyn Storage,
+        token_uri: &'a str,
+    ) -> Result<&'a str, ContractError> {
+        Configuration::indexed_token_uris().update(store, token_uri, |old| match old {
+            Some(_) => Err(ContractError::Claimed {}),
+            None => Ok(token_uri.to_string()),
+        })?;
+
+        Ok(token_uri)
     }
 
     pub fn store(&self, api: &dyn Api, store: &mut dyn Storage) -> StdResult<Response> {
@@ -53,7 +111,7 @@ impl<'a> Configuration {
     }
 
     pub fn get_static_token(store: &dyn Storage) -> StdResult<NftInfoResponse<Metadata>> {
-        if let Ok(stub_str) = Item::<'a, String>::new("static_token").load(store) {
+        if let Ok(stub_str) = Item::<'_, String>::new("static_token").load(store) {
             let result = serde_json_wasm::from_str(&stub_str);
 
             if let Ok(extension) = result {

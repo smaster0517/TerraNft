@@ -1419,6 +1419,9 @@ name = "tooling"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bitcoin",
+ "log",
+ "serde_json",
  "terra-rust-api",
  "tokio",
 ]

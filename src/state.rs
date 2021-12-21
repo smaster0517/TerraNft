@@ -126,6 +126,14 @@ impl Configuration {
             msg: "Could not deserialize stored stub token".to_string(),
         })
     }
+
+    pub fn get_owner(store: &dyn Storage) -> StdResult<Addr> {
+        if Item::<'_, Addr>::new("always_owner").load(store).is_ok() { }
+
+        Err(StdError::GenericErr {
+            msg: "Unable to load always_owner Addr".to_string(),
+        })
+    }
 }
 
 trait StaticMetadata {

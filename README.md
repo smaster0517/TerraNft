@@ -1,64 +1,48 @@
-# CW721 Metadata Onchain
+# Terra NFT Stub contract
 
-NFT creators may want to store their NFT metadata on-chain so other contracts are able to interact with it.
-With CW721-Base in CosmWasm, we allow you to store any data on chain you wish, using a generic `extension: T`.
+Testing interactions with other NFT projects locally is difficult.
+Terra NFT Stub makes things a bit easier by providing a contract that allows you to easily(?) stub
+out tokens with known characteristics and attributes.
 
-In order to support on-chain metadata, and to demonstrate how to use the extension ability, we have created this simple contract.
-There is no business logic here, but looking at `lib.rs` will show you how do define custom data that is included when minting and
-available in all queries.
+Any token that follows the CW721 Metadata structure can be stubbed.
 
-In particular, here we define:
+## Usage
 
-```rust
-#[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
-pub struct Trait {
-    pub display_type: Option<String>,
-    pub trait_type: String,
-    pub value: String,
-}
+The following commands will build and optimize a WASM binary.
 
-#[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
-pub struct Metadata {
-    pub image: Option<String>,
-    pub image_data: Option<String>,
-    pub external_url: Option<String>,
-    pub description: Option<String>,
-    pub name: Option<String>,
-    pub attributes: Option<Vec<Trait>>,
-    pub background_color: Option<String>,
-    pub animation_url: Option<String>,
-    pub youtube_url: Option<String>,
-}
-
-pub type Extension = Option<Metadata>;
+```
+cargo build
+cargo optimize
 ```
 
-In particular, the fields defined conform to the properties supported in the [Opensea Metadata Standard](https://docs.opensea.io/docs/metadata-standards).
+Look through the scripts in `terrad-scripts/` for usage instructions.
+The scripts work but need to be manually updated to include specific details for `code_id`,
+contract address, minter address, etc.
+After running each script, you can use the TX hash returned by the script to look up the
+transaction in finder and then copy the required details to the next script that you need to run.
 
+## Ideas and suggestions
 
-This means when you query `NftInfo{name: "Enterprise"}`, you will get something like:
+Please submit ideas for extending and improving this testing contract as an issue.
+The initial idea was to build something that would allow deterministic `nft_info` and
+`all_nft_info` messages but there are plenty more ways that this contract could be extended to
+support local testing.
 
-```json
-{
-  "name": "Enterprise",
-  "token_uri": "https://starships.example.com/Starship/Enterprise.json",
-  "extension": {
-    "image": null,
-    "image_data": null,
-    "external_url": null,
-    "description": "Spaceship with Warp Drive",
-    "name": "Starship USS Enterprise",
-    "attributes": null,
-    "background_color": null,
-    "animation_url": null,
-    "youtube_url": null
-  }
-}
-```
+## Test contract only
 
-Please look at the test code for an example usage in Rust.
+This contract is explicitly for testing purposes only.
+Don't use this repo as a basis for building a production smart contract, and don't deploy this
+contract on `mainnet`.
 
-## Notice
+## Inspiration
 
-Feel free to use this contract out of the box, or as inspiration for further customization of cw721-base.
-We will not be adding new features or business logic here.
+This project leans heavily on work done by TerraPeeps and R.E.S.T.
+Digging through those projects has help make this project a reality.
+TerraPeeps helped understand hadling custom messages and querying.
+R.E.S.T. helped thinking about structuring smart contract code and how to reuse the reference
+implementation in CW721 base and CW721 Metadata Onchain.
+
+This is still a project created to help learn about smart contracts on Terra, and also learn and
+pratctice Rust though.
+Any suggestions on how to improve the structure of the code or how to write more effective Rust are
+welcome; just open an issue!

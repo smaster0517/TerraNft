@@ -36,8 +36,9 @@ pub trait MsgMap {
 
 /// Have to copy Msg variants from base, as
 #[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
+#[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    StubMsg {
+    Stub {
         token_id: String,
         token_uri: String,
         owner_id: String,

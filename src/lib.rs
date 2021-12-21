@@ -56,7 +56,7 @@ pub mod entry {
         msg: ExecuteMsg,
     ) -> Result<Response, ContractError> {
         match msg {
-            ExecuteMsg::StubMsg {
+            ExecuteMsg::Stub {
                 token_id,
                 token_uri,
                 owner_id,

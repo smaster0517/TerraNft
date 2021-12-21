@@ -78,16 +78,19 @@ pub mod entry {
         match msg {
             QueryMsg::NftInfo { token_id } if token_id == "stub" => {
                 to_binary(&Configuration::get_static_token(deps.storage)?)
-            },
-            QueryMsg::AllNftInfo { include_expired: _, token_id } if token_id == "stub" => {
+            }
+            QueryMsg::AllNftInfo {
+                include_expired: _,
+                token_id,
+            } if token_id == "stub" => {
                 let info = Configuration::get_static_token(deps.storage)?;
                 let access = OwnerOfResponse {
                     approvals: vec![],
                     owner: Configuration::get_owner(deps.storage)?.to_string(),
                 };
 
-                to_binary(&AllNftInfoResponse {access, info})
-            },
+                to_binary(&AllNftInfoResponse { access, info })
+            }
             _ => Cw721MetadataContract::default().query(deps, env, msg),
         }
     }

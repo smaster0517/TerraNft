@@ -30,9 +30,10 @@ transaction in finder and then copy the required details to the next script that
 
 Please submit ideas for extending and improving this testing contract as an issue.
 The initial motivation was to build something that would allow deterministic results to be returned
-from `nft_info` and `all_nft_info` messages to build a smart contract that calls a different,
-existing NFT contract.
-There are plenty more ways that this contract could be extended to support local testing though and
+from `nft_info` and `all_nft_info` messages to have predictable results when using either query
+within another smart contract.
+
+There are plenty more ways that this contract could be extended to support local testing though, and
 we'd like to know what others want from a stub NFT contract for testing and developing Terra smart
 contracts.
 

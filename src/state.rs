@@ -23,7 +23,13 @@ impl<'a> IndexList<String> for TokenIndexString<'a> {
 }
 
 pub struct Configuration {
+    /// `always_owner` is a wallet address that will always be the owner of the static token returned
+    /// by all_nft_info.
+    /// This is set when instantiating the contract.
     pub always_owner: Option<String>,
+
+    /// An override for the static token associated with the `token_id` of `"stub"`.
+    /// This is set when instantiating the contract.
     pub static_token: Option<String>,
 }
 

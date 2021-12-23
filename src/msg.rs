@@ -25,7 +25,7 @@ pub struct InstantiateMsg {
     /// all_nft_info.
     pub always_owner: Option<String>,
 
-    /// Specify a serialized full token to use as the static token returns from nft_info and
+    /// Specify a serialized full token to use as the static token returned from nft_info and
     /// all_nft_info. Note that a default static token will be set if this is not provided!
     pub static_token: Option<String>,
 }

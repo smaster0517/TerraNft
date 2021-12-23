@@ -166,7 +166,7 @@ mod tests {
 
     use crate::entry::InstantiateMsg;
 
-    /// Lifted from astropost
+    /// Lifted from astroport
     /// https://github.com/astroport-fi/astroport-lbport/blob/ee24a0c532ec01a8af61ef58d5efc689bded1a16/contracts/factory/tests/integration.rs#L13
     fn mock_app() -> App {
         let env = mock_env_std();

@@ -134,7 +134,9 @@ impl Configuration {
     }
 
     pub fn get_owner(store: &dyn Storage) -> StdResult<Addr> {
-        if Item::<'_, Addr>::new("always_owner").load(store).is_ok() {}
+        if let Ok(owner) = Item::<'_, Addr>::new("always_owner").load(store) {
+            return Ok(owner);
+        }
 
         Err(StdError::GenericErr {
             msg: "Unable to load always_owner Addr".to_string(),

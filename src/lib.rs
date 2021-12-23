@@ -78,7 +78,7 @@ pub mod entry {
         match msg {
             QueryMsg::NftInfo { token_id } if token_id == "stub" => {
                 to_binary(&Configuration::get_static_token(deps.storage)?)
-            }
+            },
             QueryMsg::AllNftInfo {
                 include_expired: _,
                 token_id,
@@ -90,7 +90,7 @@ pub mod entry {
                 };
 
                 to_binary(&AllNftInfoResponse { access, info })
-            }
+            },
             _ => Cw721MetadataContract::default().query(deps, env, msg),
         }
     }
@@ -152,7 +152,7 @@ pub mod entry {
 }
 
 #[cfg(test)]
-mod tests {
+mod static_stub {
     use cosmwasm_std::Addr;
     use cosmwasm_std::testing::{
         mock_env as mock_env_std, MockApi as MockApi_std, MockQuerier as MockQuerier_std,
@@ -161,7 +161,7 @@ mod tests {
 
     use terra_multi_test::{App, BankKeeper, ContractWrapper, Executor, TerraMockQuerier};
 
-    use cw721::{NftInfoResponse, Cw721QueryMsg};
+    use cw721::{AllNftInfoResponse, NftInfoResponse, Cw721QueryMsg};
     use cw721_metadata_onchain::Metadata;
 
     use crate::entry::InstantiateMsg;
@@ -178,10 +178,7 @@ mod tests {
         App::new(api, env.block, bank, storage, terra_mock_querier)
     }
 
-    #[test]
-    fn stub_with_query_wasm_smart() {
-        let mut app = mock_app();
-        
+    fn init_contract(app: &mut App) -> u64 {
         let contract = Box::new(
             ContractWrapper::new(
                 crate::entry::execute,
@@ -190,40 +187,71 @@ mod tests {
             )
         );
 
-        let code_id = app.store_code(contract);
+        app.store_code(contract)
+    }
 
-        let owner = "owner1";
+    fn create_contract(app: &mut App, code_id: u64) -> Addr {
+        // This is the test1 address from localterra. There is probably a better way to create a
+        // mock / stub address for testing but needs to be investigated.
+        let owner = "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v";
 
         let msg = InstantiateMsg {
-            always_owner: None,
+            always_owner: Some(owner.to_string()),
             minter: owner.to_string(),
             name: "test1".to_string(),
             symbol: "TEST1".to_string(),
             static_token: None,
         };
         
-        // instantiate
-        let factory_instance = app
-            .instantiate_contract(
-                code_id,
-                Addr::unchecked("admin1"),
-                &msg,
-                &[],
-                "TerraStubNft",
-                None,
-            )
-            .unwrap();
+        app.instantiate_contract(
+            code_id,
+            Addr::unchecked("admin1"),
+            &msg,
+            &[],
+            "TerraStubNft",
+            None,
+        )
+        .unwrap()
+    }
 
+    #[test]
+    fn nft_info_from_query_wasm_smart() {
+        let mut app = mock_app();
+        let code_id = init_contract(&mut app);
+
+        // instantiate
         let nft_info = Cw721QueryMsg::NftInfo {
             token_id: "stub".to_string(),
         };
             
+        let contract = create_contract(&mut app, code_id);
 
         // test that query_wasm_smart will succesfully return an NftInfoResponse
         let info: NftInfoResponse<Metadata> = app.wrap().query_wasm_smart(
-                factory_instance,
+                contract,
                 &nft_info).unwrap();
 
         assert_eq!(Some("https://stub.test/stub_token.json".to_string()), info.token_uri);
+    }
+
+    #[test]
+    fn all_nft_info_from_query_wasm_smart() {
+        let mut app = mock_app();
+        let code_id = init_contract(&mut app);
+
+        // instantiate
+        let all_nft_info = Cw721QueryMsg::AllNftInfo {
+            token_id: "stub".to_string(),
+            include_expired: None,
+        };
+            
+        let contract = create_contract(&mut app, code_id);
+
+        // test that query_wasm_smart will succesfully return an NftInfoResponse
+        let resp: AllNftInfoResponse<Metadata> = app.wrap().query_wasm_smart(
+                contract,
+                &all_nft_info).unwrap();
+
+        assert_eq!(Some("https://stub.test/stub_token.json".to_string()), resp.info.token_uri);
     }
 }

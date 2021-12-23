@@ -6,7 +6,7 @@ out tokens with known characteristics and attributes.
 
 Any token that follows the CW721 Metadata structure can be stubbed.
 
-## Usage
+## Usage
 
 This project is still early stage so has not been published on crates.io yet.
 
@@ -31,7 +31,7 @@ This smart contract makes use of the
 A smart contract can import both of the references crates and use the structs in those packages to
 deserialize a token when calling `query_wasm_smart`.
 
-## Ideas and suggestions
+## Ideas and suggestions
 
 Please submit ideas for extending and improving this testing contract as an issue.
 The initial motivation was to build something that would allow deterministic results to be returned

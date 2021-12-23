@@ -122,7 +122,7 @@ impl Configuration {
 
             if let Ok(extension) = result {
                 return Ok(NftInfoResponse {
-                    token_uri: None,
+                    token_uri: Some("https://stub.test/stub_token.json".to_string()),
                     extension,
                 });
             }

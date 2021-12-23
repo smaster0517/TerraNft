@@ -150,3 +150,80 @@ pub mod entry {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use cosmwasm_std::Addr;
+    use cosmwasm_std::testing::{
+        mock_env as mock_env_std, MockApi as MockApi_std, MockQuerier as MockQuerier_std,
+        MockStorage as MockStorage_std,
+    };
+
+    use terra_multi_test::{App, BankKeeper, ContractWrapper, Executor, TerraMockQuerier};
+
+    use cw721::{NftInfoResponse, Cw721QueryMsg};
+    use cw721_metadata_onchain::Metadata;
+
+    use crate::entry::InstantiateMsg;
+
+    /// Lifted from astropost
+    /// https://github.com/astroport-fi/astroport-lbport/blob/ee24a0c532ec01a8af61ef58d5efc689bded1a16/contracts/factory/tests/integration.rs#L13
+    fn mock_app() -> App {
+        let env = mock_env_std();
+        let api = MockApi_std::default();
+        let bank = BankKeeper::new();
+        let storage = MockStorage_std::new();
+        let terra_mock_querier = TerraMockQuerier::new(MockQuerier_std::new(&[]));
+
+        App::new(api, env.block, bank, storage, terra_mock_querier)
+    }
+
+    #[test]
+    fn stub_with_query_wasm_smart() {
+        let mut app = mock_app();
+        
+        let contract = Box::new(
+            ContractWrapper::new(
+                crate::entry::execute,
+                crate::entry::instantiate,
+                crate::entry::query,
+            )
+        );
+
+        let code_id = app.store_code(contract);
+
+        let owner = "owner1";
+
+        let msg = InstantiateMsg {
+            always_owner: None,
+            minter: owner.to_string(),
+            name: "test1".to_string(),
+            symbol: "TEST1".to_string(),
+            static_token: None,
+        };
+        
+        // instantiate
+        let factory_instance = app
+            .instantiate_contract(
+                code_id,
+                Addr::unchecked("admin1"),
+                &msg,
+                &[],
+                "TerraStubNft",
+                None,
+            )
+            .unwrap();
+
+        let nft_info = Cw721QueryMsg::NftInfo {
+            token_id: "stub".to_string(),
+        };
+            
+
+        // test that query_wasm_smart will succesfully return an NftInfoResponse
+        let info: NftInfoResponse<Metadata> = app.wrap().query_wasm_smart(
+                factory_instance,
+                &nft_info).unwrap();
+
+        assert_eq!(Some("https://stub.test/stub_token.json".to_string()), info.token_uri);
+    }
+}

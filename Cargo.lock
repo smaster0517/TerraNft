@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "anyhow"
+version = "1.0.51"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
+
+[[package]]
 name = "base64"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -22,6 +28,12 @@ name = "byteorder"
 version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
+
+[[package]]
+name = "bytes"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
 name = "cfg-if"
@@ -84,6 +96,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cosmwasm-storage"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e3472d8e0e7155c5f4d89674ad47adede4b1491ad14f4141610e1522028a6a7"
+dependencies = [
+ "cosmwasm-std",
+ "serde",
+]
+
+[[package]]
 name = "cpufeatures"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -135,6 +157,16 @@ dependencies = [
 
 [[package]]
 name = "cw-storage-plus"
+version = "0.8.0"
+source = "git+https://github.com/astroport-fi/terra-plus.git#53a3ad8ccd3fce2e68f2e4f884dd9ccbfa23eec6"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "cw-storage-plus"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8e401ed71bd64abb9b91151a9ff4f7b34e81b2b3eceab23e3cb67fe47e39938"
@@ -142,6 +174,17 @@ dependencies = [
  "cosmwasm-std",
  "schemars",
  "serde",
+]
+
+[[package]]
+name = "cw0"
+version = "0.8.0"
+source = "git+https://github.com/astroport-fi/terra-plus.git#53a3ad8ccd3fce2e68f2e4f884dd9ccbfa23eec6"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
@@ -163,7 +206,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c6380164fb236412ff43c7ca075d95847c6fa8c51b2d3a513c23127a0f2a8f6"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus",
+ "cw-storage-plus 0.9.1",
  "schemars",
  "serde",
 ]
@@ -175,7 +218,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "44a81e5d775c056f5c1dd5eaaf68b82599cbc21d21c9a38eca0b74808d934806"
 dependencies = [
  "cosmwasm-std",
- "cw0",
+ "cw0 0.9.1",
  "schemars",
  "serde",
 ]
@@ -187,8 +230,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "239bdfcae1ba72cfcdd3e4eb6300eea2673b63f74425ece5b6bc45cf964fbc1a"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus",
- "cw0",
+ "cw-storage-plus 0.9.1",
+ "cw0 0.9.1",
  "cw2",
  "cw721",
  "schemars",
@@ -259,6 +302,12 @@ dependencies = [
  "sha2",
  "thiserror",
 ]
+
+[[package]]
+name = "either"
+version = "1.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
 name = "elliptic-curve"
@@ -346,6 +395,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9a9d19fa1e79b6215ff29b9d6880b706147f16e9b1dbb1e4e5947b5b02bc5e3"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -392,6 +450,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba508cc11742c0dc5c1659771673afbab7a0efab23aa17e854cbab0837ed0b43"
 dependencies = [
  "unicode-xid",
+]
+
+[[package]]
+name = "prost"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de5e2533f59d08fcf364fd374ebda0692a70bd6d7e66ef97f306f45c6c5d8020"
+dependencies = [
+ "bytes",
+ "prost-derive",
+]
+
+[[package]]
+name = "prost-derive"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "600d2f334aa05acb02a755e217ef1ab6dea4d51b58b7846588b747edec04efba"
+dependencies = [
+ "anyhow",
+ "itertools",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -558,18 +639,59 @@ dependencies = [
 ]
 
 [[package]]
+name = "terra-cosmwasm"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "552f18cba2b535d1f8c0e3b3f37696820b954bc7535d2e33909f2a6342302718"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "terra-mocks"
+version = "0.0.0"
+source = "git+https://github.com/terra-money/cosmwasm-contracts.git?rev=b25f4ac2d7bddaa3a18838cfe51d18e1ae855dcd#b25f4ac2d7bddaa3a18838cfe51d18e1ae855dcd"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+ "terra-cosmwasm",
+]
+
+[[package]]
+name = "terra-multi-test"
+version = "0.8.0"
+source = "git+https://github.com/astroport-fi/terra-plus.git#53a3ad8ccd3fce2e68f2e4f884dd9ccbfa23eec6"
+dependencies = [
+ "anyhow",
+ "cosmwasm-std",
+ "cosmwasm-storage",
+ "cw-storage-plus 0.8.0",
+ "cw0 0.8.0",
+ "itertools",
+ "prost",
+ "schemars",
+ "serde",
+ "terra-mocks",
+ "thiserror",
+]
+
+[[package]]
 name = "terra_nft_stub"
 version = "0.0.1"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
- "cw-storage-plus",
+ "cw-storage-plus 0.9.1",
  "cw721",
  "cw721-base",
  "cw721-metadata-onchain",
  "schemars",
  "serde",
  "serde-json-wasm",
+ "terra-multi-test",
  "thiserror",
 ]
 

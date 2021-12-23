@@ -26,6 +26,11 @@ address, minter address, etc.
 After running each script, you can use the TX hash returned by the script to look up the
 transaction in finder and then copy the required details to the next script that you need to run.
 
+This smart contract makes use of the
+[cw721-base](https://github.com/CosmWasm/cw-nfts/tree/main/contracts/cw721-base) and [cw721-metadata-onchain](https://github.com/CosmWasm/cw-nfts/tree/main/contracts/cw721-metadata-onchain) reference implementations specifically so that tokens can be deserialized within other contracts using the same token structs.
+A smart contract can import both of the references crates and use the structs in those packages to
+deserialize a token when calling `query_wasm_smart`.
+
 ## Ideas and suggestions
 
 Please submit ideas for extending and improving this testing contract as an issue.
@@ -51,6 +56,9 @@ Digging through those projects has help make this project a reality.
 TerraPeeps helped understand handling custom messages, querying and storage.
 R.E.S.T. helped thinking about structuring smart contract code and how to reuse the reference
 implementation in CW721 base and CW721 Metadata Onchain.
+
+The [astroport_fi factory project](https://github.com/astroport-fi/astroport-lbport/tree/ee24a0c532ec01a8af61ef58d5efc689bded1a16/contracts/factory) also helped understand how to test and verify how `query_wasm_smart`
+works, and can be tested.
 
 This is still a project created to help learn about smart contracts on Terra, and also learn and
 pratctice Rust, though.

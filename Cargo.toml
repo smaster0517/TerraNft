@@ -48,6 +48,8 @@ serde-json-wasm="0.3.1"
 
 [dev-dependencies]
 cosmwasm-schema = "0.16.0"
+terra-multi-test = {git = "https://github.com/astroport-fi/terra-plus.git"}
+
 
 [package.metadata.scripts]
 optimize = """docker run --rm -v "$(pwd)":/code \

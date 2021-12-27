@@ -28,11 +28,13 @@ pub mod entry {
         info: MessageInfo,
         msg: InstantiateMsg,
     ) -> StdResult<Response> {
-        let cfg: Configuration = (&msg).into();
+        let msg_ref = &msg;
+
+        let cfg: Configuration = msg_ref.into();
 
         cfg.store(deps.api, deps.storage)?;
 
-        let core_msg = (&msg).into();
+        let core_msg = msg_ref.into();
         Cw721MetadataContract::default().instantiate(deps, env, info, core_msg)
     }
 

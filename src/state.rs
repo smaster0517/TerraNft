@@ -1,6 +1,3 @@
-use serde::de::DeserializeOwned;
-use serde::Serialize;
-
 use cosmwasm_std::{Addr, Api, Response, StdError, StdResult, Storage};
 use cw721::NftInfoResponse;
 use cw721_base::ContractError;
@@ -43,17 +40,17 @@ pub fn token_owner_idx_string(d: &String, k: Vec<u8>) -> (String, Vec<u8>) {
     (d.clone(), k)
 }
 
-impl Configuration {
-    pub fn from_msg<T>(msg: &InstantiateMsg) -> Configuration
-    where
-        T: Serialize + DeserializeOwned + Clone,
+impl From<&InstantiateMsg> for Configuration {
+    fn from(msg: &InstantiateMsg) -> Self
     {
         Configuration {
             always_owner: msg.always_owner.clone(),
             static_token: msg.static_token.clone(),
         }
     }
+}
 
+impl Configuration {
     fn indexed_token_uris<'a>() -> IndexedMap<'a, &'a str, String, TokenIndexString<'a>> {
         let uri_indexes = TokenIndexString {
             owner: MultiIndex::new(token_owner_idx_string, "tokens_uri", "tokens_uri__owner"),

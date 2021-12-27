@@ -30,8 +30,14 @@ pub struct InstantiateMsg {
     pub static_token: Option<String>,
 }
 
-pub trait MsgMap {
-    fn from_wrapper(msg: InstantiateMsg) -> Cw721InstantiateMsg;
+impl From<&InstantiateMsg> for Cw721InstantiateMsg {
+    fn from(msg: &InstantiateMsg) -> Self {
+        Cw721InstantiateMsg {
+            name: msg.name.clone(),
+            symbol: msg.symbol.clone(),
+            minter: msg.minter.clone(),
+        }
+    }
 }
 
 /// Have to copy Msg variants from base, as

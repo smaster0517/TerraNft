@@ -23,7 +23,7 @@ pub struct InstantiateMsg {
 
     /// A wallet address as a String that will _always_ return the static token from nft_info and
     /// all_nft_info.
-    pub always_owner: Option<String>,
+    pub always_owner: String,
 
     /// Specify a serialized full token to use as the static token returned from nft_info and
     /// all_nft_info. Note that a default static token will be set if this is not provided!

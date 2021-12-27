@@ -26,7 +26,7 @@ pub struct Configuration {
     /// `always_owner` is a wallet address that will always be the owner of the static token returned
     /// by all_nft_info.
     /// This is set when instantiating the contract.
-    pub always_owner: Option<String>,
+    pub always_owner: String,
 
     /// An override for the static token associated with the `token_id` of `"stub"`.
     /// This is set when instantiating the contract.
@@ -83,11 +83,9 @@ impl Configuration {
     }
 
     pub fn store(&self, api: &dyn Api, store: &mut dyn Storage) -> StdResult<Response> {
-        if let Some(ao) = &self.always_owner {
-            let always_owner: Addr = api.addr_validate(ao)?;
-            let storage = Item::new("always_owner");
-            storage.save(store, &always_owner)?;
-        }
+        let always_owner: Addr = api.addr_validate(&self.always_owner)?;
+        let storage = Item::new("always_owner");
+        storage.save(store, &always_owner)?;
 
         if let Some(st) = &self.static_token {
             if serde_json_wasm::from_str::<Metadata>(st).is_err() {

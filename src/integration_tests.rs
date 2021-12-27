@@ -38,7 +38,7 @@ mod static_stub {
         let owner = "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v";
 
         let msg = InstantiateMsg {
-            always_owner: Some(owner.to_string()),
+            always_owner: owner.to_string(),
             minter: owner.to_string(),
             name: "test1".to_string(),
             symbol: "TEST1".to_string(),

@@ -22,6 +22,11 @@ impl<'a> IndexList<String> for TokenIndexString<'a> {
     }
 }
 
+mod store_keys {
+    pub const ALWAYS_OWNER: &str = "always_owner";
+    pub const STATIC_TOKEN: &str = "static_token";
+}
+
 pub struct Configuration {
     /// `always_owner` is a wallet address that will always be the owner of the static token returned
     /// by all_nft_info.
@@ -84,7 +89,7 @@ impl Configuration {
 
     pub fn store(&self, api: &dyn Api, store: &mut dyn Storage) -> StdResult<Response> {
         let always_owner: Addr = api.addr_validate(&self.always_owner)?;
-        let storage = Item::new("always_owner");
+        let storage = Item::new(store_keys::ALWAYS_OWNER);
         storage.save(store, &always_owner)?;
 
         if let Some(st) = &self.static_token {
@@ -95,13 +100,13 @@ impl Configuration {
                 });
             }
 
-            let storage = Item::new("static_token");
+            let storage = Item::new(store_keys::STATIC_TOKEN);
             storage.save(store, st)?;
         } else {
             let data = Metadata::static_default();
 
             if let Ok(ser) = serde_json_wasm::to_string(&data) {
-                let storage = Item::new("static_token");
+                let storage = Item::new(store_keys::STATIC_TOKEN);
                 storage.save(store, &ser)?;
             } else {
                 return Err(StdError::SerializeErr {
@@ -115,7 +120,7 @@ impl Configuration {
     }
 
     pub fn get_static_token(store: &dyn Storage) -> StdResult<NftInfoResponse<Metadata>> {
-        if let Ok(stub_str) = Item::<'_, String>::new("static_token").load(store) {
+        if let Ok(stub_str) = Item::<'_, String>::new(store_keys::STATIC_TOKEN).load(store) {
             let result = serde_json_wasm::from_str(&stub_str);
 
             if let Ok(extension) = result {
@@ -132,7 +137,7 @@ impl Configuration {
     }
 
     pub fn get_owner(store: &dyn Storage) -> StdResult<Addr> {
-        if let Ok(owner) = Item::<'_, Addr>::new("always_owner").load(store) {
+        if let Ok(owner) = Item::<'_, Addr>::new(store_keys::ALWAYS_OWNER).load(store) {
             return Ok(owner);
         }
 

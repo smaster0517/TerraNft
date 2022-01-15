@@ -17,9 +17,9 @@ pub struct InstantiateMsg {
     /// (Cw721InstantiateMsg) The name of the token
     pub name: String,
     /// (Cw721InstantiateMsg) The symbol of the token
-    pub symbol: String,
+    pub tokensymbol: String,
     /// (Cw721InstantiateMsg) The address that can mint new tokens
-    pub minter: String,
+    pub minteraddr: String,
 
     /// A wallet address as a String that will _always_ return the static token from nft_info and
     /// all_nft_info.
@@ -34,8 +34,8 @@ impl From<&InstantiateMsg> for Cw721InstantiateMsg {
     fn from(msg: &InstantiateMsg) -> Self {
         Cw721InstantiateMsg {
             name: msg.name.clone(),
-            symbol: msg.symbol.clone(),
-            minter: msg.minter.clone(),
+            tokensymbol: msg.symbol.clone(),
+            minteraddr: msg.minter.clone(),
         }
     }
 }

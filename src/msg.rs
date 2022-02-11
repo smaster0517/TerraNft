@@ -3,12 +3,12 @@ use serde::{Deserialize, Serialize};
 
 use cosmwasm_std::Binary;
 
-use cw721::Expiration;
 use cw721_base::MintMsg;
+use cw721::Expiration;
 use cw721_metadata_onchain::Extension;
 
-type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
 type Cw721ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
+type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
 
 /// This Msg duplicates the fields from cw721_base::InstantiateMsg and extends on those for the
 /// purposes of this contract.

@@ -1,7 +1,7 @@
 # Terra NFT Stub contract
 
 Testing interactions with other NFT projects locally is difficult.
-Terra NFT Stub makes things a bit easier by providing a contract that allows you to easily(?) stub out tokens with known characteristics and attributes.
+Terra NFT Stub makes things a bit easier by providing a contract that allows you to easily stub out tokens with known characteristics and attributes.
 
 Any token that follows the CW721 Metadata structure can be stubbed.
 
